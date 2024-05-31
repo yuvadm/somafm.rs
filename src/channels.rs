@@ -1,12 +1,23 @@
 use serde::Deserialize;
 
-#[derive(Deserialize)]
-#[allow(dead_code)]
-struct Channel {
-    id: String,
-    title: String,
-    description: String,
-    image: String,
+#[derive(Deserialize, Debug)]
+pub struct Channel {
+    pub id: String,
+    pub title: String,
+    pub description: String,
+    pub image: String,
+}
+
+#[derive(Deserialize, Debug)]
+pub struct Channels {
+    pub channels: Vec<Channel>,
+}
+
+pub fn get_channels() -> Vec<Channel> {
+    let url = "https://api.somafm.com/channels.json";
+    let res = reqwest::blocking::get(url).unwrap().text().unwrap();
+    let channels: Channels = serde_json::from_str(&res).unwrap();
+    channels.channels
 }
 
 mod tests {

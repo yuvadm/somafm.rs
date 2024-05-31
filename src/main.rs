@@ -1,7 +1,7 @@
 mod channels;
 
 fn main() {
-    let url = "https://api.somafm.com/channels.json";
-    let res = reqwest::blocking::get(url).unwrap().text().unwrap();
-    println!("{res}");
+    let channels = channels::get_channels();
+    let groove_salad = channels.iter().find(|c| c.id == "groovesalad").unwrap();
+    println!("{:?}", groove_salad);
 }

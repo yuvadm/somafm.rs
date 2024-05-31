@@ -1,8 +1,9 @@
 use crate::channels::Channel;
+use audio::AudioBackend;
 use inquire::{InquireError, Select};
 use spinners::{Spinner, Spinners};
-use std::process::Command;
 
+mod audio;
 mod channels;
 
 fn main() {
@@ -15,12 +16,9 @@ fn main() {
 
     match ans {
         Ok(ch) => {
-            let _sp = Spinner::new(Spinners::Arrow3, format!("Playing {}", ch));
+            let _sp = Spinner::new(Spinners::Arrow3, format!("Playing {}", ch.title));
             let url = format!("https://api.somafm.com/{}.pls", ch.id);
-            Command::new("mpv")
-                .args([url])
-                .output()
-                .expect("Failed to start mpv, make sure it is installed.");
+            audio::get_backend().play(&url);
         }
         Err(_e) => {
             println!("\nNo channel selected, exiting.");

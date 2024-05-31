@@ -1,3 +1,7 @@
+mod channels;
+
 fn main() {
-    println!("Hello, world!");
+    let url = "https://api.somafm.com/channels.json";
+    let res = reqwest::blocking::get(url).unwrap().text().unwrap();
+    println!("{res}");
 }

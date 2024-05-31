@@ -1,8 +1,8 @@
 # somafm.rs
 
-A Rust-based command line player for SomaFM radio 
+A Rust-based command line player for SomaFM radio.
 
-Currently requires `mpv` installed as the media backend, pure-rust media output is planned.
+Implements a pure-Rust audio backend, but can fallback to using a `mpv` as an optional dependency. 
 
 ## Install
 

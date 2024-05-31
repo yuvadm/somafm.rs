@@ -1,4 +1,5 @@
 use crate::channels::Channel;
+use channels::get_stream_url;
 use inquire::{InquireError, Select};
 use spinners::{Spinner, Spinners};
 
@@ -16,8 +17,12 @@ async fn main() {
 
     match ans {
         Ok(ch) => {
+            let mut sp = Spinner::new(Spinners::Dots, "Fetching channel streams...".into());
+            let pls = format!("https://api.somafm.com/{}.pls", ch.id);
+            let url = get_stream_url(&pls).await.unwrap();
+            sp.stop_with_newline();
+
             let _sp = Spinner::new(Spinners::Arrow3, format!("Playing {}", ch.title));
-            let url = format!("https://api.somafm.com/{}.pls", ch.id);
             audio::get_backend().play(&url).await
         }
         Err(_e) => {

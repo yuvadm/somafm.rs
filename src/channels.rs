@@ -27,6 +27,17 @@ pub async fn get_channels() -> Vec<Channel> {
     channels.channels
 }
 
+pub async fn get_stream_url(pls: &str) -> Option<String> {
+    let res = reqwest::get(pls).await.unwrap().text().await.unwrap();
+    for line in res.lines() {
+        let url = line.split_once("File1=");
+        if url.is_some() {
+            return Some(url.unwrap().1.to_string());
+        }
+    }
+    None
+}
+
 mod tests {
     #[test]
     fn test_channel_parse() {

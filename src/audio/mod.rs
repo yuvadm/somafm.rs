@@ -1,10 +1,6 @@
 mod mpv;
 mod rodio;
 
-pub trait AudioBackend {
-    fn play(&self, url: &str);
-}
-
 #[allow(dead_code)]
 pub enum AudioBackends {
     Mpv(mpv::Mpv),
@@ -12,14 +8,15 @@ pub enum AudioBackends {
 }
 
 pub fn get_backend() -> AudioBackends {
-    AudioBackends::Mpv(mpv::Mpv {})
+    // AudioBackends::Mpv(mpv::Mpv {})
+    AudioBackends::Rodio(rodio::Rodio {})
 }
 
-impl AudioBackend for AudioBackends {
-    fn play(&self, url: &str) {
+impl AudioBackends {
+    pub async fn play(&self, url: &str) {
         match self {
-            AudioBackends::Mpv(m) => m.play(url),
-            AudioBackends::Rodio(r) => r.play(url),
+            AudioBackends::Mpv(m) => m.play(url).await,
+            AudioBackends::Rodio(r) => r.play(url).await,
         }
     }
 }

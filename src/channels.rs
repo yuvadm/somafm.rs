@@ -20,9 +20,9 @@ pub struct Channels {
     pub channels: Vec<Channel>,
 }
 
-pub fn get_channels() -> Vec<Channel> {
+pub async fn get_channels() -> Vec<Channel> {
     let url = "https://api.somafm.com/channels.json";
-    let res = reqwest::blocking::get(url).unwrap().text().unwrap();
+    let res = reqwest::get(url).await.unwrap().text().await.unwrap();
     let channels: Channels = serde_json::from_str(&res).unwrap();
     channels.channels
 }

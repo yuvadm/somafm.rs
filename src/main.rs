@@ -10,7 +10,15 @@ fn main() {
     let channels = channels::get_channels();
     sp.stop_with_newline();
 
-    let ans: Result<Channel, InquireError> = Select::new("Select a channel", channels).prompt();
+    let ans: Result<Channel, InquireError> =
+        Select::new("Select channel from list:", channels).prompt();
 
-    println!("\n{:?}", ans);
+    match ans {
+        Ok(ch) => {
+            println!("{:?}", ch);
+        }
+        Err(_e) => {
+            println!("\nNo channel selected, exiting.");
+        }
+    }
 }

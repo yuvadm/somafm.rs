@@ -15,7 +15,9 @@ pub struct Rodio {}
 impl Rodio {
     pub async fn play(&self, url: &str) {
         let reader = StreamDownload::new_http(
-            url.parse().unwrap(),
+            "https://ice6.somafm.com/groovesalad-256-mp3"
+                .parse()
+                .unwrap(),
             TempStorageProvider::new(),
             Settings::default(),
         )

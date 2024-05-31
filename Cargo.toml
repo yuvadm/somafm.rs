@@ -1,7 +1,11 @@
 [package]
 name = "somafm"
 version = "0.1.0"
+authors = ["Yuval Adam <_@yuv.al>"]
 edition = "2021"
+license = "MIT"
+keywords = ["radio", "somafm", "media"]
+repository = "https://github.com/yuvadm/somafm.rs"
 
 [dependencies]
 inquire = "0.7.5"

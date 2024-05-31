@@ -8,7 +8,7 @@ mod channels;
 fn main() {
     let mut sp = Spinner::new(Spinners::Dots, "Loading SomaFM channels...".into());
     let channels = channels::get_channels();
-    sp.stop();
+    sp.stop_with_newline();
 
     let ans: Result<Channel, InquireError> = Select::new("Select a channel", channels).prompt();
 

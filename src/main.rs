@@ -1,7 +1,7 @@
+use crate::channels::Channel;
 use inquire::{InquireError, Select};
 use spinners::{Spinner, Spinners};
-
-use crate::channels::Channel;
+use std::process::Command;
 
 mod channels;
 
@@ -15,7 +15,12 @@ fn main() {
 
     match ans {
         Ok(ch) => {
-            println!("{:?}", ch);
+            let _sp = Spinner::new(Spinners::Arrow3, format!("Playing {}", ch));
+            let url = format!("https://api.somafm.com/{}.pls", ch.id);
+            Command::new("mpv")
+                .args([url])
+                .output()
+                .expect("Failed to start mpv, make sure it is installed.");
         }
         Err(_e) => {
             println!("\nNo channel selected, exiting.");

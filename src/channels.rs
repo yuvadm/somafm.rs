@@ -9,6 +9,12 @@ pub struct Channel {
     pub image: String,
 }
 
+impl Channel {
+    pub fn get_playlist(&self) -> String {
+        format!("https://api.somafm.com/{}.pls", self.id)
+    }
+}
+
 impl fmt::Display for Channel {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}: {}", self.title, self.description)

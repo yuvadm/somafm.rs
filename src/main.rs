@@ -18,8 +18,8 @@ async fn main() {
     match ans {
         Ok(ch) => {
             let mut sp = Spinner::new(Spinners::Dots, "Fetching channel streams...".into());
-            let pls = format!("https://api.somafm.com/{}.pls", ch.id);
-            let url = get_stream_url(&pls).await.unwrap();
+            let playlist = ch.get_playlist();
+            let url = get_stream_url(&playlist).await.unwrap();
             sp.stop_with_newline();
 
             let _sp = Spinner::new(Spinners::Arrow3, format!("Playing {}", ch.title));

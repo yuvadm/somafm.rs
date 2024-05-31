@@ -1,4 +1,5 @@
 use serde::Deserialize;
+use std::fmt;
 
 #[derive(Deserialize, Debug)]
 pub struct Channel {
@@ -6,6 +7,12 @@ pub struct Channel {
     pub title: String,
     pub description: String,
     pub image: String,
+}
+
+impl fmt::Display for Channel {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{}: {}", self.title, self.description)
+    }
 }
 
 #[derive(Deserialize, Debug)]

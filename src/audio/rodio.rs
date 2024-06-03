@@ -53,7 +53,7 @@ impl Rodio {
                         let md = metadata.unwrap();
                         if md.track_title().is_some() {
                             let tr = md.track_title().unwrap();
-                            println!("{tr}");
+                            println!(" {tr}");
                         }
                     }
                 },

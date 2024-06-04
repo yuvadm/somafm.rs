@@ -625,6 +625,8 @@ dependencies = [
 [[package]]
 name = "icy-metadata"
 version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "473e3fafde6c9b9d0753315701d000317db6965085bafcf7369c8d945dd5ef3b"
 dependencies = [
  "http",
  "reqwest",

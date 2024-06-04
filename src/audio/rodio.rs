@@ -49,10 +49,8 @@ impl Rodio {
                 // response. This will allow us to parse the metadata within the stream
                 icy_headers.metadata_interval(),
                 |metadata| {
-                    if metadata.is_ok() {
-                        let md = metadata.unwrap();
-                        if md.track_title().is_some() {
-                            let tr = md.track_title().unwrap();
+                    if let Ok(md) = metadata {
+                        if let Some(tr) = md.stream_title() {
                             println!(" {tr}");
                         }
                     }

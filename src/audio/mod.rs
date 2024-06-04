@@ -1,3 +1,5 @@
+use tokio::sync::mpsc;
+
 mod mpv;
 mod rodio;
 
@@ -13,10 +15,10 @@ pub fn get_backend() -> AudioBackends {
 }
 
 impl AudioBackends {
-    pub async fn play(&self, url: &str) {
+    pub async fn play(&self, url: &str, tx: mpsc::Sender<String>) {
         match self {
-            AudioBackends::Mpv(m) => m.play(url).await,
-            AudioBackends::Rodio(r) => r.play(url).await,
+            AudioBackends::Mpv(m) => m.play(url, tx).await,
+            AudioBackends::Rodio(r) => r.play(url, tx).await,
         }
     }
 }

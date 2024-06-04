@@ -2,6 +2,7 @@ use crate::channels::Channel;
 use channels::get_stream_url;
 use inquire::{InquireError, Select};
 use spinners::{Spinner, Spinners};
+use tokio::sync::mpsc;
 
 mod audio;
 mod channels;
@@ -15,6 +16,8 @@ async fn main() {
     let ans: Result<Channel, InquireError> =
         Select::new("Select channel from list:", channels).prompt();
 
+    let (tx, mut rx) = mpsc::channel(5);
+
     match ans {
         Ok(ch) => {
             let mut sp = Spinner::new(Spinners::Dots, "Fetching channel streams...".into());
@@ -22,8 +25,14 @@ async fn main() {
             let url = get_stream_url(&playlist).await.unwrap();
             sp.stop_with_newline();
 
-            let _sp = Spinner::new(Spinners::Arrow3, format!("Playing {}", ch.title));
-            audio::get_backend().play(&url).await
+            sp = Spinner::new(Spinners::Arrow3, format!("Playing {}", ch.title));
+            tokio::spawn(async move {
+                while let Some(title) = rx.recv().await {
+                    sp.stop_with_newline();
+                    sp = Spinner::new(Spinners::Arrow3, title);
+                }
+            });
+            audio::get_backend().play(&url, tx).await
         }
         Err(_e) => {
             println!("\nNo channel selected, exiting.");

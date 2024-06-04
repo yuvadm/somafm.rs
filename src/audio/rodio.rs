@@ -6,13 +6,14 @@ use stream_download::http::HttpStream;
 use stream_download::storage::bounded::BoundedStorageProvider;
 use stream_download::storage::memory::MemoryStorageProvider;
 use stream_download::{Settings, StreamDownload};
+use tokio::sync::mpsc;
 
 const AUDIO_BUFFER_SECONDS: u32 = 5;
 
 pub struct Rodio {}
 
 impl Rodio {
-    pub async fn play(&self, url: &str) {
+    pub async fn play(&self, url: &str, tx: mpsc::Sender<String>) {
         let (_stream, handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&handle).unwrap();
 
@@ -48,10 +49,10 @@ impl Rodio {
                 // Since we requested icy metadata, the metadata interval header should be present in the
                 // response. This will allow us to parse the metadata within the stream
                 icy_headers.metadata_interval(),
-                |metadata| {
+                move |metadata| {
                     if let Ok(md) = metadata {
                         if let Some(tr) = md.stream_title() {
-                            println!(" {tr}");
+                            let _ = tx.send(tr.to_string());
                         }
                     }
                 },

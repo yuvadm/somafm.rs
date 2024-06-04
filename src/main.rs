@@ -16,7 +16,7 @@ async fn main() {
     let ans: Result<Channel, InquireError> =
         Select::new("Select channel from list:", channels).prompt();
 
-    let (tx, mut rx) = mpsc::channel(5);
+    let (tx, mut rx) = mpsc::unbounded_channel();
 
     match ans {
         Ok(ch) => {

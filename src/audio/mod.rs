@@ -15,7 +15,7 @@ pub fn get_backend() -> AudioBackends {
 }
 
 impl AudioBackends {
-    pub async fn play(&self, url: &str, tx: mpsc::Sender<String>) {
+    pub async fn play(&self, url: &str, tx: mpsc::UnboundedSender<String>) {
         match self {
             AudioBackends::Mpv(m) => m.play(url, tx).await,
             AudioBackends::Rodio(r) => r.play(url, tx).await,

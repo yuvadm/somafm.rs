@@ -13,7 +13,7 @@ const AUDIO_BUFFER_SECONDS: u32 = 5;
 pub struct Rodio {}
 
 impl Rodio {
-    pub async fn play(&self, url: &str, tx: mpsc::Sender<String>) {
+    pub async fn play(&self, url: &str, tx: mpsc::UnboundedSender<String>) {
         let (_stream, handle) = OutputStream::try_default().unwrap();
         let sink = Sink::try_new(&handle).unwrap();
 
@@ -57,7 +57,7 @@ impl Rodio {
                     }
                 },
             ))
-            .unwrap(),
+            .expect("Failed to play stream, check network and try again later"),
         );
 
         let handle = tokio::task::spawn_blocking(move || {

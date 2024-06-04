@@ -25,7 +25,6 @@ async fn main() {
             let url = get_stream_url(&playlist).await.unwrap();
             sp.stop_with_newline();
 
-            sp = Spinner::new(Spinners::Arrow3, format!("Playing {}", ch.title));
             tokio::spawn(async move {
                 while let Some(title) = rx.recv().await {
                     sp.stop_with_newline();

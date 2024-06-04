@@ -1,49 +1,32 @@
-use std::num::NonZeroUsize;
-
+use icy_metadata::{IcyHeaders, IcyMetadataReader, RequestIcyMetadata};
 use rodio::{Decoder, OutputStream, Sink};
-use stream_download::{
-    http::{reqwest::Client, HttpStream},
-    source::SourceStream,
-    storage::{
-        bounded::BoundedStorageProvider, memory::MemoryStorageProvider, temp::TempStorageProvider,
-    },
-    Settings, StreamDownload,
-};
+use std::num::NonZeroUsize;
+use stream_download::http::reqwest::Client;
+use stream_download::http::HttpStream;
+use stream_download::storage::bounded::BoundedStorageProvider;
+use stream_download::storage::memory::MemoryStorageProvider;
+use stream_download::{Settings, StreamDownload};
+
+const AUDIO_BUFFER_SECONDS: u32 = 5;
 
 pub struct Rodio {}
 
 impl Rodio {
     pub async fn play(&self, url: &str) {
-        let reader = StreamDownload::new_http(
-            url.parse().unwrap(),
-            TempStorageProvider::new(),
-            Settings::default(),
-        )
-        .await
-        .unwrap();
+        let (_stream, handle) = OutputStream::try_default().unwrap();
+        let sink = Sink::try_new(&handle).unwrap();
 
-        let _res = tokio::task::spawn_blocking(move || {
-            let (_stream, handle) = OutputStream::try_default().unwrap();
-            let sink = Sink::try_new(&handle).unwrap();
-            sink.append(Decoder::new(reader).unwrap());
-            sink.sleep_until_end();
-        })
-        .await;
+        // request metadata header
+        let client = Client::builder().request_icy_metadata().build().unwrap();
 
-        let (_stream, handle) = rodio::OutputStream::try_default().unwrap();
-        let sink = rodio::Sink::try_new(&handle).unwrap();
-        let stream = HttpStream::<Client>::create(url.parse().unwrap())
-            .await
-            .unwrap();
+        let stream = HttpStream::new(client, url.parse().unwrap()).await.unwrap();
 
-        println!("content type={:?}", stream.content_type());
-        let bitrate: u64 = stream.header("Icy-Br").unwrap().parse().unwrap();
-        println!("bitrate={bitrate}");
+        let icy_headers = IcyHeaders::parse_from_headers(stream.headers());
+        // println!("Icecast headers: {icy_headers:#?}\n");
+        // println!("content type={:?}\n", stream.content_type());
 
-        // buffer 5 seconds of audio
-        // bitrate (in kilobits) / bits per byte * bytes per kilobyte * 5 seconds
-        let prefetch_bytes = bitrate / 8 * 1024 * 5;
-        println!("prefetch bytes={prefetch_bytes}");
+        // buffer bitrate (in kilobits) / bits per byte * bytes per kilobyte * N seconds
+        let prefetch_bytes = icy_headers.bitrate().unwrap() / 8 * 1024 * AUDIO_BUFFER_SECONDS;
 
         let reader = StreamDownload::from_stream(
             stream,
@@ -54,15 +37,31 @@ impl Rodio {
                 // prevent any out-of-bounds reads
                 NonZeroUsize::new(512 * 1024).unwrap(),
             ),
-            Settings::default().prefetch_bytes(prefetch_bytes),
+            Settings::default().prefetch_bytes(prefetch_bytes as u64),
         )
         .await
         .unwrap();
-        sink.append(rodio::Decoder::new(reader).unwrap());
+
+        sink.append(
+            Decoder::new(IcyMetadataReader::new(
+                reader,
+                // Since we requested icy metadata, the metadata interval header should be present in the
+                // response. This will allow us to parse the metadata within the stream
+                icy_headers.metadata_interval(),
+                |metadata| {
+                    if let Ok(md) = metadata {
+                        if let Some(tr) = md.stream_title() {
+                            println!(" {tr}");
+                        }
+                    }
+                },
+            ))
+            .unwrap(),
+        );
 
         let handle = tokio::task::spawn_blocking(move || {
             sink.sleep_until_end();
         });
-        handle.await.unwrap()
+        handle.await.unwrap();
     }
 }

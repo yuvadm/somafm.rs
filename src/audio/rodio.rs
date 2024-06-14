@@ -42,22 +42,21 @@ impl Rodio {
         .await
         .unwrap();
 
-        sink.append(
-            Decoder::new(IcyMetadataReader::new(
-                reader,
-                // Since we requested icy metadata, the metadata interval header should be present in the
-                // response. This will allow us to parse the metadata within the stream
-                icy_headers.metadata_interval(),
-                |metadata| {
-                    if let Ok(md) = metadata {
-                        if let Some(tr) = md.stream_title() {
-                            println!(" {tr}");
-                        }
+        let metadata_reader = IcyMetadataReader::new(
+            reader,
+            // Since we requested icy metadata, the metadata interval header should be present in the
+            // response. This will allow us to parse the metadata within the stream
+            icy_headers.metadata_interval(),
+            |metadata| {
+                if let Ok(md) = metadata {
+                    if let Some(tr) = md.stream_title() {
+                        println!(" {tr}");
                     }
-                },
-            ))
-            .unwrap(),
+                }
+            },
         );
+
+        sink.append(Decoder::new(metadata_reader).unwrap());
 
         let handle = tokio::task::spawn_blocking(move || {
             sink.sleep_until_end();

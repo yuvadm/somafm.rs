@@ -22,7 +22,10 @@ async fn main() {
             let url = get_stream_url(&playlist).await.unwrap();
             sp.stop_with_newline();
 
-            let _sp = Spinner::new(Spinners::Arrow3, format!("Playing {} at {}", ch.title, url));
+            let mut sp = Spinner::new(Spinners::Arrow3, format!("Playing {} at {}", ch.title, url));
+            sp.stop_with_newline();
+
+            let _sp = Spinner::new(Spinners::Arrow3, String::new());
             audio::get_backend().play(&url).await
         }
         Err(_e) => {

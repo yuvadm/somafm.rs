@@ -50,7 +50,7 @@ impl Rodio {
             |metadata| {
                 if let Ok(md) = metadata {
                     if let Some(tr) = md.stream_title() {
-                        println!(" {tr}");
+                        println!("{tr}");
                     }
                 }
             },

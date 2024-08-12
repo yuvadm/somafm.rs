@@ -298,6 +298,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0d6ef0072f8a535281e4876be788938b528e9a1d43900b82c2569af7da799125"
 
 [[package]]
+name = "educe"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1d7bc049e1bd8cdeb31b68bbd586a9464ecf9f3944af3958a7a9d0f8b9799417"
+dependencies = [
+ "enum-ordinalize",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.66",
+]
+
+[[package]]
 name = "either"
 version = "1.12.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -310,6 +322,26 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b45de904aa0b010bce2ab45264d0631681847fa7b6f2eaa7dab7619943bc4f59"
 dependencies = [
  "cfg-if",
+]
+
+[[package]]
+name = "enum-ordinalize"
+version = "4.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fea0dcfa4e54eeb516fe454635a95753ddd39acda650ce703031c6973e315dd5"
+dependencies = [
+ "enum-ordinalize-derive",
+]
+
+[[package]]
+name = "enum-ordinalize-derive"
+version = "4.3.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0d28318a75d4aead5c4db25382e8ef717932d0346600cacae6357eb5941bc5ff"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.66",
 ]
 
 [[package]]
@@ -624,9 +656,9 @@ dependencies = [
 
 [[package]]
 name = "icy-metadata"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4a53b5be13ffaacfc452a3406d0182298a3b367d624422bb5a7c18c50b1fe16b"
+checksum = "0fc3168c6523832f0dd345e6d549edb0d52b8908f1dae8a101333093916456a2"
 dependencies = [
  "http",
  "reqwest",
@@ -1463,7 +1495,7 @@ dependencies = [
 
 [[package]]
 name = "somafm"
-version = "0.5.1"
+version = "0.5.2"
 dependencies = [
  "icy-metadata",
  "inquire",
@@ -1489,11 +1521,12 @@ dependencies = [
 
 [[package]]
 name = "stream-download"
-version = "0.5.2"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85fa761723d640532a18f46b7f429fc181fc8d2b5b37721fad5cd48bd95098a5"
+checksum = "b786f17ebad2eee44ecacd92e96de22b4fbebf58a5a7b1758e0ca2ee828df918"
 dependencies = [
  "bytes",
+ "educe",
  "futures",
  "mediatype",
  "parking_lot",

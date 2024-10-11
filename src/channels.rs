@@ -6,6 +6,7 @@ pub struct Channel {
     pub id: String,
     pub title: String,
     pub description: String,
+    #[allow(dead_code)]
     pub image: String,
 }
 
